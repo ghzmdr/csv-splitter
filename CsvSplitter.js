@@ -29,6 +29,8 @@ CsvSplitter.prototype = {
 
         // refactor with generator or stream, so you can use reader.nextLine() without looping indexes. I = 1 is error-prone.
         for (let i = 1; i < this._csvReader.length(); ++i) { //i = 1 to skip header
+            if (csvWriter) csvWriter.addLine(this._csvReader.getLine(i));
+
             if (i % maxEntries === 0) {
 
                 csvWriter.write(this._getNextFileName());
@@ -36,12 +38,10 @@ CsvSplitter.prototype = {
 
                 console.log(`[CsvSplitter] Wrote ${this._currentFile} / ${this._amountOfFiles} files`);
 
-                if (this._currentFile <= this._amountOfFiles) {
+                if (this._currentFile < this._amountOfFiles) {
                     csvWriter = new CsvWriter(this._csvReader.getHeader());
                 }
             }
-
-            if (csvWriter) csvWriter.addLine(this._csvReader.getLine(i));
         }
 
         if (csvWriter) {
